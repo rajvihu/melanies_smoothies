@@ -29,9 +29,9 @@ my_dataframe = session.table("smoothies.public.fruit_options").select (col('frui
 #st.stop()
 
 #convert the snowpark dataframe to a pandas  dataframe
-pd_pf=my_dataframe.to_pandas()
-st.dataframe(pd_pf)
-st.stop()
+pd_df=my_dataframe.to_pandas()
+#st.dataframe(pd_pf)
+#st.stop()
 ingredients_list = st.multiselect(
     'choose up to 5 ingredients:'
     ,my_dataframe
@@ -42,6 +42,8 @@ if ingredients_list:
     
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ''
+        search_on=pd_df.loc[pd_df['fruit_name'] == fruit_chosen, 'search_on'].iloc[0]
+        st.write('The search value for ',fruit_chosen,' is ', search_on, '.')
         #st.subheader(fruit_chosen + 'Nutrition Information')
         #smoothiefroot_response = requests.get(smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/"+ fruit_chosen)
         #sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)                             

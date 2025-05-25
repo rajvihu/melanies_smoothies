@@ -75,11 +75,10 @@ if ingredients_list:
 
 
     # Corrected SQL insert statement
-    # IMPORTANT: Assuming your 'orders' table has columns named 'ingredients' and 'customer_name'.
-    # If your column name for the customer's name is different (e.g., 'name_on_order'),
-    # please update 'customer_name' in the SQL query below accordingly.
+    # Changed 'customer_name' to 'NAME_ON_ORDER' to match common Snowflake unquoted identifier casing.
+    # IMPORTANT: Verify this matches your actual column name and casing in Snowflake.
     my_insert_stmt = f"""
-        INSERT INTO smoothies.public.orders(ingredients, customer_name)
+        INSERT INTO smoothies.public.orders(ingredients, NAME_ON_ORDER)
         VALUES ('{ingredients_string.strip()}', '{name_on_order}')
     """
 

@@ -45,10 +45,4 @@ st.subheader("External API Data Example:")
 try:
     smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
     # Check if the request was successful
-    if smoothiefroot_response.status_code == 200:
-        st.json(smoothiefroot_response.json()) # Use st.json for better display of JSON
-    else:
-        st.error(f"Failed to fetch data from API. Status code: {smoothiefroot_response.status_code}")
-except requests.exceptions.RequestException as e:
-    st.error(f"Error connecting to the API: {e}")
- 
+    sf_df = st.dataframe(data=smoothiefroot_response.json(),use_container_width=true)

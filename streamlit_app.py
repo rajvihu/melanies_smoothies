@@ -31,7 +31,14 @@ my_dataframe = session.table("smoothies.public.fruit_options").select(col('fruit
 # Convert Snowpark DataFrame to Pandas DataFrame for easier filtering/lookup
 pd_df = my_dataframe.to_pandas()
 
+# --- DEBUGGING LINES ADDED HERE ---
+st.subheader("Debugging DataFrame Content:")
+st.write("Columns in pd_df:", pd_df.columns.tolist())
+st.dataframe(pd_df)
+# --- END DEBUGGING LINES ---
+
 # Convert the 'FRUIT_NAME' column from the Pandas DataFrame to a list for st.multiselect
+# This line will also fail if 'FRUIT_NAME' is not a column in pd_df
 fruit_names_list = pd_df['FRUIT_NAME'].tolist()
 
 ingredients_list = st.multiselect(
@@ -57,12 +64,14 @@ if ingredients_list:
         # Corrected lookup in the Pandas DataFrame
         # Column names from Snowflake often become uppercase in Pandas DataFrames
         try:
+            # The KeyError is happening here if 'FRUIT_NAME' is not found
             search_on_value = pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON'].iloc[0]
             st.write('The search value for ',fruit_chosen,' is ', search_on_value)
         except IndexError:
             st.warning(f"Could not find search value for '{fruit_chosen}'. Check your fruit_options table data.")
-        except KeyError:
-            st.error("Missing 'SEARCH_ON' or 'FRUIT_NAME' column in your data. Please check Snowflake table schema.")
+        except KeyError as e:
+            # More specific error message for debugging
+            st.error(f"KeyError: {e}. Missing expected column in DataFrame. Please check Snowflake table schema and column casing.")
 
 
     # Corrected SQL insert statement

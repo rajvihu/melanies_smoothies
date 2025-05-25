@@ -60,6 +60,9 @@ if ingredients_list:
     ingredients_string = ''
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
+        smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
+        sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
+        
 
         # Corrected lookup in the Pandas DataFrame
         # Column names from Snowflake often become uppercase in Pandas DataFrames

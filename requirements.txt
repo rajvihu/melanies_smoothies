@@ -2,4 +2,4 @@
 snowflake-snowpark-python
 streamlit
 requests
-pip install requests
+pip install --upgrade pip

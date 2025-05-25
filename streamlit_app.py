@@ -1,6 +1,13 @@
 # Import python packages
 import streamlit as st
 from snowflake.snowpark.functions import col
+import requests
+# --- ADD THESE TWO LINES RIGHT AFTER THE IMPORT ---
+st.write(f"Is 'requests' defined after import? {'requests' in globals()}")
+try:
+    st.write(f"Type of 'requests' after import: {type(requests)}")
+except NameError:
+    st.write("`requests` is not defined immediately after import!")
 
 # Write directly to the app
 st.title(":cup_with_straw,Customize Your Smoothie!:cup_with_straw:")
@@ -44,17 +51,15 @@ if ingredients_list:
 #smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
 #st.text(smoothiefroot_response)
 #sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
- # --- Add requests API call here ---
+# --- Add requests API call here ---
 # Make a request to an external API and display its JSON response
 st.subheader("External API Data Example:")
 try:
     smoothiefroot_response = requests.get("https://my.smoothiefroot.com/api/fruit/watermelon")
     # Check if the request was successful
     if smoothiefroot_response.status_code == 200:
-        # Changed st.json to st.dataframe as requested
         sf_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
-    else: # Corrected indentation and placement of else
+    else:
         st.error(f"Failed to fetch data from API. Status code: {smoothiefroot_response.status_code}")
 except requests.exceptions.RequestException as e:
-    st.error(f"Error connecting to the API: {e}")
-   
+    st.error(f"Error connecting to the API: {e}")   

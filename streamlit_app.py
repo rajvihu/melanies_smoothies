@@ -72,7 +72,7 @@ if ingredients_list:
         try:
             # The KeyError is happening here if 'FRUIT_NAME' is not found
             search_on_value = pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON'].iloc[0]
-            st.write('The search value for ',fruit_chosen,' is ', search_on_value)
+            #st.write('The search value for ',fruit_chosen,' is ', search_on_value)
         except IndexError:
             st.warning(f"Could not find search value for '{fruit_chosen}'. Check your fruit_options table data.")
         except KeyError as e:

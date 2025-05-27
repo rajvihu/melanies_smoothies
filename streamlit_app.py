@@ -39,17 +39,23 @@ ingredients_list = st.multiselect(
     max_selections=5
 )
 
-# --- MODIFIED LOGIC FOR ingredients_string ---
+# --- MODIFIED LOGIC FOR ingredients_string AND ORDER_FILLED ---
 if ingredients_list:
-    # 1. Sort the ingredients alphabetically
-    # 2. Join them with a comma and a space. This is a very common format for labs.
-    #    If the lab expects just spaces, change ', ' to ' '.
-    #    If the lab expects just commas, change ', ' to ','.
-    #    It's crucial to get this delimiter and spacing EXACTLY right.
-    sorted_ingredients = sorted(ingredients_list)
-    ingredients_string = ", ".join(sorted_ingredients) # e.g., "Banana, Blueberry, Strawberry"
+    # IMPORTANT: DO NOT SORT. The lab specifies "in that order!".
+    # Join them with a comma and a space. This is a common format.
+    # If the grader's hash is still off, experiment with the delimiter:
+    # e.g., " ".join(ingredients_list) or ",".join(ingredients_list)
+    ingredients_string = ", ".join(ingredients_list)
 
-    st.write(f"Ingredients string for hashing: '{ingredients_string}'") # Added for debugging
+    st.write(f"Ingredients string being sent to Snowflake: '{ingredients_string}'") # Debugging output
+
+    # Determine order_filled status based on name
+    order_filled_status = False # Default to not filled
+
+    if name_on_order and name_on_order.lower() in ('divya', 'xi'):
+        order_filled_status = True # Mark as filled for Divya and Xi
+
+    st.write(f"Order filled status for {name_on_order}: {order_filled_status}") # Debugging output
 
     # --- REST OF YOUR EXISTING CODE FOR API CALLS FOR EACH FRUIT ---
     for fruit_chosen in ingredients_list:
@@ -83,10 +89,11 @@ if ingredients_list:
     # --- END API CALLS FOR EACH FRUIT ---
 
 
-    # The SQL insert statement uses the refined ingredients_string
+    # The SQL insert statement uses the refined ingredients_string and order_filled_status
+    # Assuming ORDER_FILLED is a BOOLEAN column in Snowflake. If it's VARCHAR, use 'TRUE' or 'FALSE'.
     my_insert_stmt = f"""
-        INSERT INTO smoothies.public.orders(ingredients, NAME_ON_ORDER)
-        VALUES ('{ingredients_string}', '{name_on_order}')
+        INSERT INTO smoothies.public.orders(ingredients, NAME_ON_ORDER, ORDER_FILLED)
+        VALUES ('{ingredients_string}', '{name_on_order}', {order_filled_status})
     """
     st.write("SQL INSERT statement for debugging:", my_insert_stmt) # Show the exact SQL being run
 

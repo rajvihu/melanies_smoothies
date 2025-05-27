@@ -1,9 +1,9 @@
-# Import python packages
 import streamlit as st
 from snowflake.snowpark.functions import col
 import requests # Import the requests library
 import pandas as pd # Import pandas for DataFrame operations
 
+# ... (rest of your code remains the same)
 # Write directly to the app
 st.title(":cup_with_straw: Customize Your Smoothie! :cup_with_straw:")
 st.write(
@@ -54,33 +54,35 @@ try:
 except NameError:
     st.write("`requests` is not defined immediately after import!")
 
-
 # Process the selected ingredients and prepare the order
 if ingredients_list:
     ingredients_string = ''
     for fruit_chosen in ingredients_list:
         ingredients_string += fruit_chosen + ' '
-        search_on=pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON'].iloc[0]
+        # Correctly get the search_on value for the current fruit
+        search_on = pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON'].iloc[0]
         
-        st.subheader(fruit_chosen + 'Nutrition Information')
-        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/"+ search_on)
-        fv_df = st.dataframe(data=smoothiefroot_response.json(), use_container_width=True)
+        st.subheader(fruit_chosen + ' Nutrition Information')
         
+        # Make the API call to Fruityvice for the current fruit
+        fruityvice_response = requests.get("https://fruityvice.com/api/fruit/" + search_on)
+        
+        # Check if the API call was successful before attempting to parse JSON
+        if fruityvice_response.status_code == 200:
+            fv_df = st.dataframe(data=fruityvice_response.json(), use_container_width=True)
+        else:
+            st.error(f"Failed to fetch nutrition data for {fruit_chosen}. Status code: {fruityvice_response.status_code}")
 
-        # Corrected lookup in the Pandas DataFrame
-        # Column names from Snowflake often become uppercase in Pandas DataFrames
+        # Corrected lookup in the Pandas DataFrame (this block was already mostly correct)
         try:
-            # The KeyError is happening here if 'FRUIT_NAME' is not found
             search_on_value = pd_df.loc[pd_df['FRUIT_NAME'] == fruit_chosen, 'SEARCH_ON'].iloc[0]
-            #st.write('The search value for ',fruit_chosen,' is ', search_on_value)
         except IndexError:
             st.warning(f"Could not find search value for '{fruit_chosen}'. Check your fruit_options table data.")
         except KeyError as e:
-            # More specific error message for debugging
             st.error(f"KeyError: {e}. Missing expected column in DataFrame. Please check Snowflake table schema and column casing.")
-
-
-    # Corrected SQL insert statement
+            
+    # ... (rest of your code for inserting into Snowflake and the final API call)
+     # Corrected SQL insert statement
     # Changed 'customer_name' to 'NAME_ON_ORDER' to match common Snowflake unquoted identifier casing.
     # IMPORTANT: Verify this matches your actual column name and casing in Snowflake.
     my_insert_stmt = f"""
